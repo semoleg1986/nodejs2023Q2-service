@@ -9,4 +9,5 @@ export class UsersController {
     getUsers(){
         return this.userService.getUsers();
     }
+    
 }
