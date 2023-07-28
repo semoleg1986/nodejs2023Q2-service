@@ -4,6 +4,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -47,6 +48,9 @@ export class UsersService {
 
   update(id: string, updateUserDto: UpdateUserDto): User {
     const user = this.users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
     if (!isString(updateUserDto.newPassword)) {
       throw new BadRequestException('Invalid dto');
     }

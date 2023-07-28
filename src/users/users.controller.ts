@@ -11,9 +11,11 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
+import { plainToClass } from 'class-transformer';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Controller('user')
 export class UsersController {
@@ -21,8 +23,8 @@ export class UsersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  create(@Body() createUserDto: CreateUserDto): User {
+    return plainToClass(User, this.usersService.create(createUserDto));
   }
 
   @Get()
@@ -51,7 +53,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return this.usersService.update(id, updateUserDto);
+    return plainToClass(User, this.usersService.update(id, updateUserDto));
   }
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
