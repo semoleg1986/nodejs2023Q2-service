@@ -49,10 +49,6 @@ export class UsersController {
     if (!this.usersService.isValidUserId(id)) {
       throw new BadRequestException('Invalid userId');
     }
-    const user = this.usersService.findOne(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
     return plainToClass(User, this.usersService.update(id, updateUserDto));
   }
   @HttpCode(HttpStatus.NO_CONTENT)

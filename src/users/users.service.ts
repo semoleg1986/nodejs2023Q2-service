@@ -47,12 +47,12 @@ export class UsersService {
   }
 
   update(id: string, updateUserDto: UpdateUserDto): User {
+    if (!isString(updateUserDto.newPassword)) {
+      throw new BadRequestException('Invalid dto');
+    }
     const user = this.users.find((user) => user.id === id);
     if (!user) {
       throw new NotFoundException('User not found');
-    }
-    if (!isString(updateUserDto.newPassword)) {
-      throw new BadRequestException('Invalid dto');
     }
     if (user.password === updateUserDto.oldPassword) {
       user.password = updateUserDto.newPassword;
