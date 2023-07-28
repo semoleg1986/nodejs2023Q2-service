@@ -57,7 +57,11 @@ export class ArtistsService {
     return artist;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} artist`;
+  remove(id: string) {
+    const artist = this.artists.find((artist) => artist.id === id);
+    const artistIndex = this.artists.findIndex((artist) => artist.id === id);
+    if (artist) {
+      this.artists.splice(artistIndex, 1);
+    }
   }
 }
