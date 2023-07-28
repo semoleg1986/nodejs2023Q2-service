@@ -8,7 +8,6 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
-  HttpException,
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
@@ -54,7 +53,7 @@ export class UsersController {
     }
     return this.usersService.update(id, updateUserDto);
   }
-  @HttpCode(HttpStatus.NO_CONTENT) 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
     if (!this.usersService.isValidUserId(id)) {
