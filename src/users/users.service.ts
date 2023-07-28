@@ -3,13 +3,12 @@ import { v4 as uuid4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 // import { users } from 'src/moks';
-import { isString } from 'class-validator';
+import { isString, isUUID } from 'class-validator';
 import { User } from './entities/user.entity';
-import { version } from 'os';
 
 @Injectable()
 export class UsersService {
-  private users: CreateUserDto[] = [];
+  private users: User[] = [];
   create(createUserDto: CreateUserDto): User {
     if (!isString(createUserDto.login) || !isString(createUserDto.password)) {
       throw new HttpException(
@@ -32,8 +31,12 @@ export class UsersService {
     return this.users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  isValidUserId(id: string): boolean {
+    return isUUID(id, 'all');
+  }
+
+  findOne(id: string): User | undefined {
+    return this.users.find((user) => user.id === id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
