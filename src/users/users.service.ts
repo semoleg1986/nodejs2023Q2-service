@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { v4 as uuid4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -39,8 +45,19 @@ export class UsersService {
     return this.users.find((user) => user.id === id);
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto): User {
+    const user = this.users.find((user) => user.id === id);
+    if (!isString(updateUserDto.newPassword)) {
+      throw new BadRequestException('Invalid dto');
+    }
+    if (user.password === updateUserDto.oldPassword) {
+      user.password = updateUserDto.newPassword;
+      user.version++;
+      user.updatedAt = Date.now();
+      return user;
+    } else {
+      throw new ForbiddenException('Old password is wrong');
+    }
   }
 
   remove(id: number) {

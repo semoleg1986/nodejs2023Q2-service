@@ -1,8 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, HttpException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  HttpException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-
 
 @Controller('user')
 export class UsersController {
@@ -21,20 +33,27 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    if (!this.usersService.isValidUserId(id)){
-      throw new HttpException('Invalid userId', HttpStatus.BAD_REQUEST);
+    if (!this.usersService.isValidUserId(id)) {
+      throw new BadRequestException('Invalid userId');
     }
     const user = this.usersService.findOne(id);
-    if (!user){
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
     return user;
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    if (!this.usersService.isValidUserId(id)) {
+      throw new BadRequestException('Invalid userId');
+    }
+    const user = this.usersService.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return this.usersService.update(id, updateUserDto);
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
