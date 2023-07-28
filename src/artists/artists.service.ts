@@ -1,4 +1,8 @@
-import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
@@ -32,8 +36,25 @@ export class ArtistsService {
     return this.artists.find((artist) => artist.id === id);
   }
 
-  update(id: number, updateArtistDto: UpdateArtistDto) {
-    return `This action updates a #${id} artist`;
+  update(id: string, updateArtistDto: UpdateArtistDto): Artist {
+    if (
+      !updateArtistDto ||
+      !isString(updateArtistDto.name) ||
+      !isBoolean(updateArtistDto.grammy)
+    ) {
+      throw new BadRequestException('Invalid dto');
+    }
+    const artist = this.artists.find((artist) => artist.id === id);
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+    if (updateArtistDto.name) {
+      artist.name = updateArtistDto.name;
+    }
+    if (updateArtistDto.hasOwnProperty('grammy')) {
+      artist.grammy = updateArtistDto.grammy;
+    }
+    return artist;
   }
 
   remove(id: number) {
