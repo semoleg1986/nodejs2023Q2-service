@@ -29,7 +29,7 @@ export class ArtistsService {
   }
 
   findOne(id: string): Artist | undefined {
-    return 'This action get by id';
+    return this.artists.find((artist) => artist.id === id);
   }
 
   update(id: number, updateArtistDto: UpdateArtistDto) {

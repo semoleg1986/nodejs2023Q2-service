@@ -33,7 +33,14 @@ export class ArtistsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-
+    if (!this.artistsService.isValidArtistId(id)) {
+      throw new BadRequestException('Invalid artistId');
+    }
+    const artist = this.artistsService.findOne(id);
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+    return artist;
   }
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
