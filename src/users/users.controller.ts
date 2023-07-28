@@ -55,8 +55,15 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    if (!this.usersService.isValidUserId(id)) {
+      throw new BadRequestException('Invalid userId');
+    }
+    const user = this.usersService.findOne(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    this.usersService.remove(id);
+  }
 }
