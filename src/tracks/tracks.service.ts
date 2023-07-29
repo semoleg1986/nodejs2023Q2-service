@@ -8,10 +8,11 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
 import { isString, isUUID } from 'class-validator';
+import { DatabaseService } from 'src/database/database';
 
 @Injectable()
 export class TracksService {
-  private tracks: Track[] = [];
+  // private tracks: Track[] = [];
   create(createTrackDto: CreateTrackDto) {
     if (!createTrackDto.name || !createTrackDto.duration) {
       throw new BadRequestException('Invalid dto');
@@ -23,12 +24,12 @@ export class TracksService {
       albumId: createTrackDto.albumId || null,
       duration: createTrackDto.duration,
     };
-    this.tracks.push(newTrack);
+    DatabaseService.tracks.push(newTrack);
     return newTrack;
   }
 
   findAll() {
-    return this.tracks;
+    return DatabaseService.tracks;
   }
 
   isValidTrackId(id: string): boolean {
@@ -36,7 +37,7 @@ export class TracksService {
   }
 
   findOne(id: string) {
-    return this.tracks.find((track) => track.id === id);
+    return DatabaseService.tracks.find((track) => track.id === id);
   }
 
   update(id: string, updateTrackDto: UpdateTrackDto) {
@@ -49,7 +50,7 @@ export class TracksService {
     if (updateTrackDto.albumId && !isString(updateTrackDto.albumId)) {
       throw new BadRequestException('Invalid dto');
     }
-    const track = this.tracks.find((track) => track.id === id);
+    const track = DatabaseService.tracks.find((track) => track.id === id);
     if (!track) {
       throw new NotFoundException('Track not found');
     }
@@ -69,10 +70,12 @@ export class TracksService {
   }
 
   remove(id: string) {
-    const track = this.tracks.find((track) => track.id === id);
-    const trackIndex = this.tracks.findIndex((track) => track.id === id);
+    const track = DatabaseService.tracks.find((track) => track.id === id);
+    const trackIndex = DatabaseService.tracks.findIndex(
+      (track) => track.id === id,
+    );
     if (track) {
-      this.tracks.splice(trackIndex, 1);
+      DatabaseService.tracks.splice(trackIndex, 1);
     }
   }
 }
