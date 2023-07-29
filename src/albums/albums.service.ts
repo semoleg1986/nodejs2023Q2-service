@@ -69,6 +69,11 @@ export class AlbumsService {
     );
     if (album) {
       DatabaseService.albums.splice(albumIndex, 1);
+      DatabaseService.tracks.forEach((album) => {
+        if (album.albumId === id) {
+          album.albumId = null;
+        }
+      });
     }
   }
 }
