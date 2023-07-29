@@ -18,7 +18,9 @@ export class AlbumsService {
     }
     const newAlbum: Album = {
       id: uuidv4(),
-      ...createAlbumDto,
+      name: createAlbumDto.name,
+      year: createAlbumDto.year,
+      artistId: createAlbumDto.artistId || null,
     };
     this.albums.push(newAlbum);
     return newAlbum;
