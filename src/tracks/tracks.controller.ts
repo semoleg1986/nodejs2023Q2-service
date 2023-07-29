@@ -44,6 +44,7 @@ export class TracksController {
   }
 
   @Put(':id')
+  @HttpCode(HttpStatus.OK)
   update(@Param('id') id: string, @Body() updateTrackDto: UpdateTrackDto) {
     if (!this.tracksService.isValidTrackId(id)) {
       throw new BadRequestException('Invalid trackId');
@@ -51,8 +52,16 @@ export class TracksController {
     return this.tracksService.update(id, updateTrackDto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tracksService.remove(+id);
+    if (!this.tracksService.isValidTrackId(id)) {
+      throw new BadRequestException('Invalid trackId');
+    }
+    const album = this.tracksService.findOne(id);
+    if (!album) {
+      throw new NotFoundException('Track not found');
+    }
+    this.tracksService.remove(id);
   }
 }

@@ -68,7 +68,11 @@ export class TracksService {
     return track;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} track`;
+  remove(id: string) {
+    const track = this.tracks.find((track) => track.id === id);
+    const trackIndex = this.tracks.findIndex((track) => track.id === id);
+    if (track) {
+      this.tracks.splice(trackIndex, 1);
+    }
   }
 }
