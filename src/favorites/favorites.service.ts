@@ -17,7 +17,7 @@ export class FavoritesService {
     if (!track) {
       throw new NotFoundException('Track not found');
     }
-    DatabaseService.favorites.tracks.push(trackId);
+    DatabaseService.favorites.tracks.push(track);
     return 'Track added to favorites';
   }
   addAlbumToFavorites(albumId: string): string {
@@ -28,7 +28,7 @@ export class FavoritesService {
     if (!album) {
       throw new NotFoundException('Album not found');
     }
-    DatabaseService.favorites.tracks.push(albumId);
+    DatabaseService.favorites.albums.push(album);
     return 'Album added to favorites';
   }
   addArtistToFavorites(artistId: string): string {
@@ -41,11 +41,15 @@ export class FavoritesService {
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
-    DatabaseService.favorites.tracks.push(artistId);
+    DatabaseService.favorites.artist.push(artist);
     return 'Artist added to favorites';
   }
   findAll() {
-    return `This action returns all favorites`;
+    return {
+      albums: DatabaseService.favorites.albums,
+      artists: DatabaseService.favorites.artist,
+      tracks: DatabaseService.favorites.tracks,
+    };
   }
 
   findOne(id: number) {
