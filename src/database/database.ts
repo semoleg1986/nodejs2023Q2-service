@@ -8,6 +8,13 @@ export interface IDatabaseService {
   artists: Artist[];
   tracks: Track[];
   albums: Album[];
+  favorites: IFavorites;
+}
+
+export interface IFavorites {
+  artist: string[];
+  albums: string[];
+  tracks: string[];
 }
 
 export const DatabaseService: IDatabaseService = {
@@ -15,4 +22,9 @@ export const DatabaseService: IDatabaseService = {
   artists: [],
   albums: [],
   tracks: [],
+  favorites: {
+    artist: [],
+    albums: [],
+    tracks: [],
+  },
 };
