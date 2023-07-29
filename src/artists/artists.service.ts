@@ -70,6 +70,8 @@ export class ArtistsService {
           album.artistId = null;
         }
       });
+      DatabaseService.favorites.artist =
+        DatabaseService.favorites.artist.filter((artistId) => artistId !== id);
       DatabaseService.tracks.forEach((track) => {
         if (track.artistId === id) {
           track.artistId = null;

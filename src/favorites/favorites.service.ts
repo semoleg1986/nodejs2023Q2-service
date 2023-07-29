@@ -81,19 +81,19 @@ export class FavoritesService {
     DatabaseService.tracks.splice(track, 1);
   }
   removeAlbum(id: string) {
-    const album = DatabaseService.tracks.findIndex((album) => album.id === id);
+    const album = DatabaseService.albums.findIndex((album) => album.id === id);
     if (!album) {
       throw new NotFoundException('Album not found');
     }
-    DatabaseService.tracks.splice(album, 1);
+    DatabaseService.albums.splice(album, 1);
   }
   removeArtist(id: string) {
-    const artist = DatabaseService.tracks.findIndex(
+    const artist = DatabaseService.artists.findIndex(
       (artist) => artist.id === id,
     );
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
-    DatabaseService.tracks.splice(artist, 1);
+    DatabaseService.artists.splice(artist, 1);
   }
 }

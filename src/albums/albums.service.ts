@@ -69,6 +69,8 @@ export class AlbumsService {
     );
     if (album) {
       DatabaseService.albums.splice(albumIndex, 1);
+      DatabaseService.favorites.albums =
+        DatabaseService.favorites.albums.filter((albumId) => albumId !== id);
       DatabaseService.tracks.forEach((album) => {
         if (album.albumId === id) {
           album.albumId = null;

@@ -36,17 +36,17 @@ export class FavoritesController {
     return this.favoritesService.findAll();
   }
 
-  @Delete('track:id')
+  @Delete('track/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeTrack(@Param('id') id: string) {
     return this.favoritesService.removeTrack(id);
   }
-  @Delete('album:id')
+  @Delete('album/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeAlbum(@Param('id') id: string) {
     return this.favoritesService.removeAlbum(id);
   }
-  @Delete('artist:id')
+  @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeArtist(@Param('id') id: string) {
     return this.favoritesService.removeArtist(id);

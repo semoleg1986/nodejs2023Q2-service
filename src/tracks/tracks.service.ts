@@ -75,6 +75,8 @@ export class TracksService {
       (track) => track.id === id,
     );
     if (track) {
+      DatabaseService.favorites.tracks =
+        DatabaseService.favorites.tracks.filter((trackId) => trackId !== id);
       DatabaseService.tracks.splice(trackIndex, 1);
     }
   }
