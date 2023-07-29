@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as YAML from 'yamljs';
-import * as fs from 'fs';
 import * as path from 'path';
 import { SwaggerModule } from '@nestjs/swagger';
 
@@ -14,7 +13,7 @@ async function bootstrap() {
   const apiSpecPath = path.join('doc', 'api.yaml');
   const apiSpec = YAML.load(apiSpecPath);
   const document = SwaggerModule.createDocument(app, apiSpec);
-  SwaggerModule.setup('doc', app, document);
+  SwaggerModule.setup('api-docs', app, document);
   await app.listen(port);
 }
 bootstrap();
