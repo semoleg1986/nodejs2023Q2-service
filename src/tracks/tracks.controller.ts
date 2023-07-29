@@ -8,6 +8,8 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
 import { CreateTrackDto } from './dto/create-track.dto';
@@ -31,7 +33,14 @@ export class TracksController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.tracksService.findOne(+id);
+    if (!this.tracksService.isValidTrackId(id)) {
+      throw new BadRequestException('Invalid trackId');
+    }
+    const track = this.tracksService.findOne(id);
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
+    return track;
   }
 
   @Put(':id')

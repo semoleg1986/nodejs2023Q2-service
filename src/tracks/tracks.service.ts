@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class TracksService {
@@ -23,11 +24,15 @@ export class TracksService {
   }
 
   findAll() {
-    return `This action returns all tracks`;
+    return this.tracks;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} track`;
+  isValidTrackId(id: string): boolean {
+    return isUUID(id, 'all');
+  }
+
+  findOne(id: string) {
+    return this.tracks.find((track) => track.id === id);
   }
 
   update(id: number, updateTrackDto: UpdateTrackDto) {
