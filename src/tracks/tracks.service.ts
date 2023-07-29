@@ -1,11 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { Track } from './entities/track.entity';
 
 @Injectable()
 export class TracksService {
+  private tracks: Track[] = [];
   create(createTrackDto: CreateTrackDto) {
-    return 'This action adds a new track';
+    if (!createTrackDto.name || !createTrackDto.duration) {
+      throw new BadRequestException('Invalid dto');
+    }
+    const newTrack: Track = {
+      id: uuidv4(),
+      name: createTrackDto.name,
+      artistId: createTrackDto.artistId || null,
+      albumId: createTrackDto.albumId || null,
+      duration: createTrackDto.duration,
+    };
+    this.tracks.push(newTrack);
+    return newTrack;
   }
 
   findAll() {
