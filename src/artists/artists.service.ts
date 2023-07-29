@@ -8,10 +8,11 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { isBoolean, isString, isUUID } from 'class-validator';
+import { DatabaseService } from 'src/database/database';
 
 @Injectable()
 export class ArtistsService {
-  private artists: Artist[] = [];
+  // private artists: Artist[] = [];
   create(createArtistDto: CreateArtistDto) {
     if (!isString(createArtistDto.name) || !isBoolean(createArtistDto.grammy)) {
       throw new BadRequestException('Invalid dto');
@@ -20,12 +21,12 @@ export class ArtistsService {
       id: uuidv4(),
       ...createArtistDto,
     };
-    this.artists.push(newArtist);
+    DatabaseService.artists.push(newArtist);
     return newArtist;
   }
 
   findAll() {
-    return this.artists;
+    return DatabaseService.artists;
   }
 
   isValidArtistId(id: string): boolean {
@@ -33,7 +34,7 @@ export class ArtistsService {
   }
 
   findOne(id: string): Artist | undefined {
-    return this.artists.find((artist) => artist.id === id);
+    return DatabaseService.artists.find((artist) => artist.id === id);
   }
 
   update(id: string, updateArtistDto: UpdateArtistDto): Artist {
@@ -44,7 +45,7 @@ export class ArtistsService {
     ) {
       throw new BadRequestException('Invalid dto');
     }
-    const artist = this.artists.find((artist) => artist.id === id);
+    const artist = DatabaseService.artists.find((artist) => artist.id === id);
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
@@ -58,10 +59,12 @@ export class ArtistsService {
   }
 
   remove(id: string) {
-    const artist = this.artists.find((artist) => artist.id === id);
-    const artistIndex = this.artists.findIndex((artist) => artist.id === id);
+    const artist = DatabaseService.artists.find((artist) => artist.id === id);
+    const artistIndex = DatabaseService.artists.findIndex(
+      (artist) => artist.id === id,
+    );
     if (artist) {
-      this.artists.splice(artistIndex, 1);
+      DatabaseService.artists.splice(artistIndex, 1);
     }
   }
 }
