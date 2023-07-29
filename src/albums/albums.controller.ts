@@ -33,7 +33,7 @@ export class AlbumsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string): Album {
     if (!this.albumsService.isValidAlbumId(id)) {
       throw new BadRequestException('Invalid albumId');
     }
@@ -52,9 +52,16 @@ export class AlbumsController {
     }
     return this.albumsService.update(id, updateAlbumDto);
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.albumsService.remove(+id);
+    if (!this.albumsService.isValidAlbumId(id)) {
+      throw new BadRequestException('Invalid albumId');
+    }
+    const album = this.albumsService.findOne(id);
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+    this.albumsService.remove(id);
   }
 }

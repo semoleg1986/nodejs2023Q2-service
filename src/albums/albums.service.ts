@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { isUUID } from 'class-validator';
+import { isString, isUUID } from 'class-validator';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
@@ -18,9 +18,7 @@ export class AlbumsService {
     }
     const newAlbum: Album = {
       id: uuidv4(),
-      name: createAlbumDto.name,
-      year: createAlbumDto.year,
-      artistId: createAlbumDto.artistId || null,
+      ...createAlbumDto,
     };
     this.albums.push(newAlbum);
     return newAlbum;
@@ -42,6 +40,9 @@ export class AlbumsService {
     if (!updateAlbumDto.name || !updateAlbumDto.year) {
       throw new BadRequestException('Invalid dto');
     }
+    if (updateAlbumDto.artistId && !isString(updateAlbumDto.artistId)) {
+      throw new BadRequestException('Invalid dto');
+    }
     const album = this.albums.find((album) => album.id === id);
     if (!album) {
       throw new NotFoundException('Album not found');
@@ -58,7 +59,11 @@ export class AlbumsService {
     return album;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} album`;
+  remove(id: string) {
+    const album = this.albums.find((album) => album.id === id);
+    const albumIndex = this.albums.findIndex((album) => album.id === id);
+    if (album) {
+      this.albums.splice(albumIndex, 1);
+    }
   }
 }

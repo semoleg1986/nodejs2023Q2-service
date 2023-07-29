@@ -59,11 +59,11 @@ export class ArtistsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     if (!this.artistsService.isValidArtistId(id)) {
-      throw new BadRequestException('Invalid userId');
+      throw new BadRequestException('Invalid artistId');
     }
-    const user = this.artistsService.findOne(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
+    const artist = this.artistsService.findOne(id);
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
     }
     this.artistsService.remove(id);
   }

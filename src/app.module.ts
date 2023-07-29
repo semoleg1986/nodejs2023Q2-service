@@ -8,7 +8,13 @@ import { ArtistsModule } from './artists/artists.module';
 import { AlbumsModule } from './albums/albums.module';
 
 @Module({
-  imports: [UsersModule, ConfigModule.forRoot(), TracksModule, ArtistsModule, AlbumsModule],
+  imports: [
+    UsersModule,
+    ConfigModule.forRoot(),
+    TracksModule,
+    ArtistsModule,
+    AlbumsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
