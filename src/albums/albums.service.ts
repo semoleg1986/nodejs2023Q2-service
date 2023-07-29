@@ -1,9 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { isUUID } from 'class-validator';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
-import { isUUID } from 'class-validator';
 
 @Injectable()
 export class AlbumsService {
@@ -14,7 +18,9 @@ export class AlbumsService {
     }
     const newAlbum: Album = {
       id: uuidv4(),
-      ...createAlbumDto,
+      name: createAlbumDto.name,
+      year: createAlbumDto.year,
+      artistId: createAlbumDto.artistId || null,
     };
     this.albums.push(newAlbum);
     return newAlbum;
@@ -32,8 +38,24 @@ export class AlbumsService {
     return this.albums.find((album) => album.id === id);
   }
 
-  update(id: number, updateAlbumDto: UpdateAlbumDto) {
-    return `This action updates a #${id} album`;
+  update(id: string, updateAlbumDto: UpdateAlbumDto) {
+    if (!updateAlbumDto.name || !updateAlbumDto.year) {
+      throw new BadRequestException('Invalid dto');
+    }
+    const album = this.albums.find((album) => album.id === id);
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+    if (updateAlbumDto.name) {
+      album.name = updateAlbumDto.name;
+    }
+    if (updateAlbumDto.year) {
+      album.year = updateAlbumDto.year;
+    }
+    if (updateAlbumDto.artistId) {
+      album.artistId = updateAlbumDto.artistId;
+    }
+    return album;
   }
 
   remove(id: number) {
