@@ -1,9 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { Track } from './entities/track.entity';
-import { isUUID } from 'class-validator';
+import { isString, isUUID } from 'class-validator';
 
 @Injectable()
 export class TracksService {
@@ -35,8 +39,33 @@ export class TracksService {
     return this.tracks.find((track) => track.id === id);
   }
 
-  update(id: number, updateTrackDto: UpdateTrackDto) {
-    return `This action updates a #${id} track`;
+  update(id: string, updateTrackDto: UpdateTrackDto) {
+    if (!updateTrackDto.name || !updateTrackDto.duration) {
+      throw new BadRequestException('Invalid dto');
+    }
+    if (updateTrackDto.artistId && !isString(updateTrackDto.artistId)) {
+      throw new BadRequestException('Invalid dto');
+    }
+    if (updateTrackDto.albumId && !isString(updateTrackDto.albumId)) {
+      throw new BadRequestException('Invalid dto');
+    }
+    const track = this.tracks.find((track) => track.id === id);
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
+    if (updateTrackDto.name) {
+      track.name = updateTrackDto.name;
+    }
+    if (updateTrackDto.duration) {
+      track.duration = updateTrackDto.duration;
+    }
+    if (updateTrackDto.artistId) {
+      track.artistId = updateTrackDto.artistId;
+    }
+    if (updateTrackDto.albumId) {
+      track.albumId = updateTrackDto.albumId;
+    }
+    return track;
   }
 
   remove(id: number) {

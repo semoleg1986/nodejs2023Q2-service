@@ -45,7 +45,10 @@ export class TracksController {
 
   @Put(':id')
   update(@Param('id') id: string, @Body() updateTrackDto: UpdateTrackDto) {
-    return this.tracksService.update(+id, updateTrackDto);
+    if (!this.tracksService.isValidTrackId(id)) {
+      throw new BadRequestException('Invalid trackId');
+    }
+    return this.tracksService.update(id, updateTrackDto);
   }
 
   @Delete(':id')
