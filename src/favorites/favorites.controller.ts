@@ -6,6 +6,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
 // import { CreateFavoriteDto } from './dto/create-favorite.dto';
@@ -35,20 +36,19 @@ export class FavoritesController {
   findAll() {
     return this.favoritesService.findAll();
   }
-
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('track/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  removeTrack(@Param('id') id: string) {
-    return this.favoritesService.removeTrack(id);
+  removeTrack(@Param('id', ParseUUIDPipe) trackId: string) {
+    return this.favoritesService.removeTrack(trackId);
   }
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('album/:id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  removeAlbum(@Param('id') id: string) {
-    return this.favoritesService.removeAlbum(id);
+  removeAlbum(@Param('id', ParseUUIDPipe) albumId: string) {
+    return this.favoritesService.removeAlbum(albumId);
   }
-  @Delete('artist/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  removeArtist(@Param('id') id: string) {
-    return this.favoritesService.removeArtist(id);
+  @Delete('artist/:id')
+  removeArtist(@Param('id', ParseUUIDPipe) artistId: string) {
+    return this.favoritesService.removeArtist(artistId);
   }
 }

@@ -73,27 +73,41 @@ export class FavoritesService {
     return { artists, albums, tracks };
   }
 
-  removeTrack(id: string) {
-    const track = DatabaseService.tracks.findIndex((track) => track.id === id);
-    if (!track) {
+  removeTrack(trackId: string) {
+    const trackIndex = DatabaseService.tracks.findIndex(
+      (track) => track.id === trackId,
+    );
+    if (trackIndex === -1) {
       throw new NotFoundException('Track not found');
     }
-    DatabaseService.tracks.splice(track, 1);
+    const favoritesIndex = DatabaseService.favorites.tracks.indexOf(trackId);
+    if (favoritesIndex !== -1) {
+      DatabaseService.favorites.tracks.splice(favoritesIndex, 1);
+    }
   }
-  removeAlbum(id: string) {
-    const album = DatabaseService.albums.findIndex((album) => album.id === id);
-    if (!album) {
+
+  removeAlbum(albumId: string) {
+    const albumIndex = DatabaseService.albums.findIndex(
+      (album) => album.id === albumId,
+    );
+    if (albumIndex === -1) {
       throw new NotFoundException('Album not found');
     }
-    DatabaseService.albums.splice(album, 1);
+    const favoritesIndex = DatabaseService.favorites.albums.indexOf(albumId);
+    if (favoritesIndex !== -1) {
+      DatabaseService.favorites.albums.splice(favoritesIndex, 1);
+    }
   }
-  removeArtist(id: string) {
-    const artist = DatabaseService.artists.findIndex(
-      (artist) => artist.id === id,
+  removeArtist(artistId: string) {
+    const artistIndex = DatabaseService.artists.findIndex(
+      (artist) => artist.id === artistId,
     );
-    if (!artist) {
+    if (artistIndex === -1) {
       throw new NotFoundException('Artist not found');
     }
-    DatabaseService.artists.splice(artist, 1);
+    const favoritesIndex = DatabaseService.favorites.artist.indexOf(artistId);
+    if (favoritesIndex !== -1) {
+      DatabaseService.favorites.artist.splice(favoritesIndex, 1);
+    }
   }
 }
