@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   Param,
   Delete,
   HttpCode,
@@ -37,18 +36,19 @@ export class FavoritesController {
     return this.favoritesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.favoritesService.findOne(+id);
+  @Delete('track:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeTrack(@Param('id') id: string) {
+    return this.favoritesService.removeTrack(id);
   }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateFavoriteDto: UpdateFavoriteDto) {
-  //   return this.favoritesService.update(+id, updateFavoriteDto);
-  // }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.favoritesService.remove(+id);
+  @Delete('album:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeAlbum(@Param('id') id: string) {
+    return this.favoritesService.removeAlbum(id);
+  }
+  @Delete('artist:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeArtist(@Param('id') id: string) {
+    return this.favoritesService.removeArtist(id);
   }
 }

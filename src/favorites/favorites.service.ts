@@ -5,7 +5,6 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { isUUID } from 'class-validator';
 import { DatabaseService } from 'src/database/database';
 import { AlbumsService } from 'src/albums/albums.service';
@@ -25,11 +24,12 @@ export class FavoritesService {
       throw new BadRequestException('Invalid trackId');
     }
     const track = DatabaseService.tracks.find((track) => track.id === trackId);
-    if (!track) {
-      throw new NotFoundException('Track not found');
+    if (track) {
+      DatabaseService.favorites.tracks.push(trackId);
+      return track;
+    } else {
+      throw new UnprocessableEntityException('Track not found');
     }
-    DatabaseService.favorites.tracks.push(trackId);
-    return track;
   }
   addAlbumToFavorites(albumId: string) {
     if (!isUUID(albumId, 'all')) {
@@ -50,11 +50,12 @@ export class FavoritesService {
     const artist = DatabaseService.artists.find(
       (artist) => artist.id === artistId,
     );
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
+    if (artist) {
+      DatabaseService.favorites.artist.push(artistId);
+      return artist;
+    } else {
+      throw new UnprocessableEntityException('Artist not found');
     }
-    DatabaseService.favorites.artist.push(artistId);
-    return artist;
   }
   findAll() {
     const artists = DatabaseService.favorites.artist.map((artist) =>
@@ -72,15 +73,27 @@ export class FavoritesService {
     return { artists, albums, tracks };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} favorite`;
+  removeTrack(id: string) {
+    const track = DatabaseService.tracks.findIndex((track) => track.id === id);
+    if (!track) {
+      throw new NotFoundException('Track not found');
+    }
+    DatabaseService.tracks.splice(track, 1);
   }
-
-  update(id: number, updateFavoriteDto: UpdateFavoriteDto) {
-    return `This action updates a #${id} favorite`;
+  removeAlbum(id: string) {
+    const album = DatabaseService.tracks.findIndex((album) => album.id === id);
+    if (!album) {
+      throw new NotFoundException('Album not found');
+    }
+    DatabaseService.tracks.splice(album, 1);
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} favorite`;
+  removeArtist(id: string) {
+    const artist = DatabaseService.tracks.findIndex(
+      (artist) => artist.id === id,
+    );
+    if (!artist) {
+      throw new NotFoundException('Artist not found');
+    }
+    DatabaseService.tracks.splice(artist, 1);
   }
 }
