@@ -8,10 +8,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
+import { DatabaseService } from 'src/database/database';
 
 @Injectable()
 export class AlbumsService {
-  private readonly albums: Album[] = [];
+  // private readonly albums: Album[] = [];
   create(createAlbumDto: CreateAlbumDto) {
     if (!createAlbumDto.name || !createAlbumDto.year) {
       throw new BadRequestException('Invalid dto');
@@ -22,12 +23,12 @@ export class AlbumsService {
       year: createAlbumDto.year,
       artistId: createAlbumDto.artistId || null,
     };
-    this.albums.push(newAlbum);
+    DatabaseService.albums.push(newAlbum);
     return newAlbum;
   }
 
   findAll() {
-    return this.albums;
+    return DatabaseService.albums;
   }
 
   isValidAlbumId(id: string): boolean {
@@ -35,7 +36,7 @@ export class AlbumsService {
   }
 
   findOne(id: string): Album {
-    return this.albums.find((album) => album.id === id);
+    return DatabaseService.albums.find((album) => album.id === id);
   }
 
   update(id: string, updateAlbumDto: UpdateAlbumDto) {
@@ -45,7 +46,7 @@ export class AlbumsService {
     if (updateAlbumDto.artistId && !isString(updateAlbumDto.artistId)) {
       throw new BadRequestException('Invalid dto');
     }
-    const album = this.albums.find((album) => album.id === id);
+    const album = DatabaseService.albums.find((album) => album.id === id);
     if (!album) {
       throw new NotFoundException('Album not found');
     }
@@ -62,10 +63,12 @@ export class AlbumsService {
   }
 
   remove(id: string) {
-    const album = this.albums.find((album) => album.id === id);
-    const albumIndex = this.albums.findIndex((album) => album.id === id);
+    const album = DatabaseService.albums.find((album) => album.id === id);
+    const albumIndex = DatabaseService.albums.findIndex(
+      (album) => album.id === id,
+    );
     if (album) {
-      this.albums.splice(albumIndex, 1);
+      DatabaseService.albums.splice(albumIndex, 1);
     }
   }
 }
