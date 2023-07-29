@@ -1,15 +1,26 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { isUUID } from 'class-validator';
 import { DatabaseService } from 'src/database/database';
+import { AlbumsService } from 'src/albums/albums.service';
+import { ArtistsService } from 'src/artists/artists.service';
+import { TracksService } from 'src/tracks/tracks.service';
 
 @Injectable()
 export class FavoritesService {
-  addTrackToFavorites(trackId: string): string {
+  @Inject(ArtistsService)
+  private artistsService: ArtistsService;
+  @Inject(AlbumsService)
+  private albumsService: AlbumsService;
+  @Inject(TracksService)
+  private tracksService: TracksService;
+  addTrackToFavorites(trackId: string) {
     if (!isUUID(trackId, 'all')) {
       throw new BadRequestException('Invalid trackId');
     }
@@ -17,21 +28,22 @@ export class FavoritesService {
     if (!track) {
       throw new NotFoundException('Track not found');
     }
-    DatabaseService.favorites.tracks.push(track);
-    return 'Track added to favorites';
+    DatabaseService.favorites.tracks.push(trackId);
+    return track;
   }
-  addAlbumToFavorites(albumId: string): string {
+  addAlbumToFavorites(albumId: string) {
     if (!isUUID(albumId, 'all')) {
       throw new BadRequestException('Invalid albumId');
     }
     const album = DatabaseService.albums.find((album) => album.id === albumId);
-    if (!album) {
-      throw new NotFoundException('Album not found');
+    if (album) {
+      DatabaseService.favorites.albums.push(albumId);
+      return album;
+    } else {
+      throw new UnprocessableEntityException('Album not found');
     }
-    DatabaseService.favorites.albums.push(album);
-    return 'Album added to favorites';
   }
-  addArtistToFavorites(artistId: string): string {
+  addArtistToFavorites(artistId: string) {
     if (!isUUID(artistId, 'all')) {
       throw new BadRequestException('Invalid artistId');
     }
@@ -41,15 +53,23 @@ export class FavoritesService {
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
-    DatabaseService.favorites.artist.push(artist);
-    return 'Artist added to favorites';
+    DatabaseService.favorites.artist.push(artistId);
+    return artist;
   }
   findAll() {
-    return {
-      albums: DatabaseService.favorites.albums,
-      artists: DatabaseService.favorites.artist,
-      tracks: DatabaseService.favorites.tracks,
-    };
+    const artists = DatabaseService.favorites.artist.map((artist) =>
+      this.artistsService.findOne(artist),
+    );
+
+    const albums = DatabaseService.favorites.albums.map((album) =>
+      this.albumsService.findOne(album),
+    );
+
+    const tracks = DatabaseService.favorites.tracks.map((track) =>
+      this.tracksService.findOne(track),
+    );
+
+    return { artists, albums, tracks };
   }
 
   findOne(id: number) {

@@ -12,9 +12,9 @@ export interface IDatabaseService {
 }
 
 export interface IFavorites {
-  artist: Artist[];
-  albums: Album[];
-  tracks: Track[];
+  artist: string[];
+  albums: string[];
+  tracks: string[];
 }
 
 export const DatabaseService: IDatabaseService = {
