@@ -11,7 +11,7 @@ import {
   BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,7 +24,6 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -48,14 +47,14 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get all users', description: 'Gets all users' })
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'Successful operation',
-    type: [User],
+    type: User,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   findAll() {
-    return this.usersService.findAll();
+    const users = this.usersService.findAll();
+    return plainToInstance(User, users);
   }
 
   @Get(':id')
@@ -77,7 +76,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    return user;
+    return plainToClass(User, user);
   }
 
   @Put(':id')

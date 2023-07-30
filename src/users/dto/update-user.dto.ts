@@ -3,8 +3,8 @@ import { CreateUserDto } from './create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-  @ApiProperty()
+  @ApiProperty({ required: true, description: 'Old password' })
   oldPassword: string;
-  @ApiProperty()
+  @ApiProperty({ required: true, description: 'New password' })
   newPassword: string;
 }
