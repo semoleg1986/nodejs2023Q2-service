@@ -28,7 +28,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { UnauthorizedError } from 'src/utils/UnauthorizedError';
 
 @ApiTags('Users')
 @Controller('user')
