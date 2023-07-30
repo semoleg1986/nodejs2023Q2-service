@@ -54,11 +54,7 @@ export class UsersController {
     description: 'Successful operation',
     type: [User],
   })
-  @ApiResponse({
-    status: 401,
-    description: 'Unauthorized',
-    type: UnauthorizedError,
-  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   findAll() {
     return this.usersService.findAll();
   }
