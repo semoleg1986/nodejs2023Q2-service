@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as YAML from 'yamljs';
-import * as path from 'path';
+// import * as YAML from 'yamljs';
+// import * as path from 'path';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 const port = process.env.PORT || 3000;
