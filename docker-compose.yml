@@ -1,24 +1,24 @@
 version: '3.0.0'
 services:
-  api:
-      # image: semoleg1986/nodejs2023q2-service
-      build: 
-          dockerfile: Dockerfile
-          context: .
-      depends_on:
-          - postgres
-      environment:
-          DATABASE_URL: postgres://user:password@postgres:5432/db 
-          NODE_ENV: development
-          PORT: 4000
-      ports:
-          -"4000:4000"
+    api:
+        # image: semoleg1986/nodejs2023q2-service
+        build: 
+            dockerfile: Dockerfile
+            context: .
+        depends_on:
+            - postgres
+        environment:
+            DATABASE_URL: postgres://user:password@postgres:5432/db 
+            NODE_ENV: development
+            PORT: 4000
+        ports:
+            - "4000:4000"
 
-  postgres:
-      image: postgres:15-alpine
-      ports:
-          -"35000:5432"
-      environment:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: db
+    postgres:
+        image: postgres:15-alpine
+        ports:
+            - "35000:5432"
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: db
