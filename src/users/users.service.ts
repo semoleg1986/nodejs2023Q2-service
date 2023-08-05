@@ -12,12 +12,19 @@ import { UpdateUserDto } from './dto/update-user.dto';
 // import { users } from 'src/moks';
 import { isString, isUUID } from 'class-validator';
 import { User } from './entities/user.entity';
-import { DatabaseService } from 'src/database/database';
+// import { DatabaseService } from 'src/database/database';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
   // private users: User[] = [];
-  create(createUserDto: CreateUserDto): User {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     if (!isString(createUserDto.login) || !isString(createUserDto.password)) {
       throw new HttpException(
         'Login and password must be strings',
@@ -31,46 +38,71 @@ export class UsersService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
     };
-    DatabaseService.users.push(newUser);
-    return newUser;
+    // DatabaseService.users.push(newUser);
+    // return newUser;
+    return await this.userRepository.save(newUser)
   }
 
-  findAll() {
-    return DatabaseService.users;
+  async findAll(): Promise<User[]> {
+    // return DatabaseService.users;
+    return await this.userRepository.find();
   }
 
   isValidUserId(id: string): boolean {
     return isUUID(id, 'all');
   }
 
-  findOne(id: string): User | undefined {
-    return DatabaseService.users.find((user) => user.id === id);
+  async findOne(id: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { id: id } })
+      .then(user => {
+        if (!user) {
+          throw new NotFoundException('User not found');
+        }
+        return user;
+      })
+      .catch(error => {
+        console.error('Error while fetching user:', error.message);
+        throw error;
+      });
   }
+  
 
-  update(id: string, updateUserDto: UpdateUserDto): User {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     if (!isString(updateUserDto.newPassword)) {
       throw new BadRequestException('Invalid dto');
     }
-    const user = DatabaseService.users.find((user) => user.id === id);
+    // const user = DatabaseService.users.find((user) => user.id === id);
+  
+    try {
+      const user = await this.userRepository.findOne({ where: { id: id } });
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+  
+      if (user.password === updateUserDto.oldPassword) {
+        user.password = updateUserDto.newPassword;
+        user.version++;
+        user.updatedAt = Date.now();
+        return await this.userRepository.save(user);
+      } else {
+        throw new ForbiddenException('Old password is wrong');
+      }
+    } catch (error) {
+      console.error('Error while updating user:', error.message);
+      throw error;
+    }
+  }
+  
+
+  async remove(id: string) {
+    const user = await this.userRepository.findOne({ where: { id: id } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-
-    if (user.password === updateUserDto.oldPassword) {
-      user.password = updateUserDto.newPassword;
-      user.version++;
-      user.updatedAt = Date.now();
-      return user;
-    } else {
-      throw new ForbiddenException('Old password is wrong');
-    }
+    
+    await this.userRepository.remove(user);
+  
+    return user;
   }
-
-  remove(id: string) {
-    const user = DatabaseService.users.find((user) => user.id === id);
-    const userIndex = DatabaseService.users.findIndex((user) => user.id === id);
-    if (user) {
-      DatabaseService.users.splice(userIndex, 1);
-    }
-  }
+  
 }

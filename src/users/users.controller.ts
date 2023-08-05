@@ -107,14 +107,19 @@ export class UsersController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'User not found' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!this.usersService.isValidUserId(id)) {
       throw new BadRequestException('Invalid userId');
     }
-    const user = this.usersService.findOne(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
+
+    try {
+      await this.usersService.remove(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('User not found');
+      }
+      console.error('Error while removing user:', error.message);
+      throw error;
     }
-    this.usersService.remove(id);
   }
 }
