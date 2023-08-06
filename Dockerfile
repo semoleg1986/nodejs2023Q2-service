@@ -3,6 +3,7 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
+
 RUN npm install --production
 
 COPY . .
@@ -14,10 +15,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY --from=build /app/package*.json ./
-COPY --from=build /app/dist ./dist
+COPY --from=build /app/ .
 
 RUN npm install --production
+
+RUN npm install @types/jest jest
 
 EXPOSE 4000
 
