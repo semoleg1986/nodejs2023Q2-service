@@ -26,6 +26,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 @ApiTags('Track')
 @Controller('track')
@@ -44,8 +45,7 @@ export class TracksController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   create(@Body() createTrackDto: CreateTrackDto) {
-    const newTrack = this.tracksService.create(createTrackDto);
-    return newTrack;
+    return plainToClass(Track, this.tracksService.create(createTrackDto));
   }
 
   @Get()
@@ -84,7 +84,7 @@ export class TracksController {
     if (!track) {
       throw new NotFoundException('Track not found');
     }
-    return track;
+    return plainToClass(Track, track);
   }
 
   @Put(':id')
@@ -103,7 +103,7 @@ export class TracksController {
     if (!this.tracksService.isValidTrackId(id)) {
       throw new BadRequestException('Invalid trackId');
     }
-    return this.tracksService.update(id, updateTrackDto);
+    return plainToClass(Track, this.tracksService.update(id, updateTrackDto));
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -118,14 +118,19 @@ export class TracksController {
   @ApiBadRequestResponse({
     description: 'Bad request. trackId is invalid (not uuid)',
   })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!this.tracksService.isValidTrackId(id)) {
       throw new BadRequestException('Invalid trackId');
     }
-    const album = this.tracksService.findOne(id);
-    if (!album) {
-      throw new NotFoundException('Track not found');
+
+    try {
+      await this.tracksService.remove(id);
+    } catch(error){
+      if (error instanceof NotFoundException){
+        throw new NotFoundException('Track not found')
+      }
+      console.error('Error while removing track:', error.message);
+      throw error;
     }
-    this.tracksService.remove(id);
   }
 }
