@@ -25,6 +25,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 @ApiTags('Album')
 @Controller('album')
@@ -43,8 +44,7 @@ export class AlbumsController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   create(@Body() createAlbumDto: CreateAlbumDto): Album {
-    const newAlbum = this.albumsService.create(createAlbumDto);
-    return newAlbum;
+    return plainToClass(Album, this.albumsService.create(createAlbumDto))
   }
 
   @Get()
@@ -77,7 +77,7 @@ export class AlbumsController {
     if (!album) {
       throw new NotFoundException('Album not found');
     }
-    return album;
+    return plainToClass(Album, album);
   }
 
   @Put(':id')
@@ -96,8 +96,9 @@ export class AlbumsController {
     if (!this.albumsService.isValidAlbumId(id)) {
       throw new BadRequestException('Invalid albumId');
     }
-    return this.albumsService.update(id, updateAlbumDto);
+    return plainToClass(Album, this.albumsService.update(id, updateAlbumDto));
   }
+
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
@@ -110,14 +111,19 @@ export class AlbumsController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiNotFoundResponse({ description: 'Album was not found' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!this.albumsService.isValidAlbumId(id)) {
       throw new BadRequestException('Invalid albumId');
     }
-    const album = this.albumsService.findOne(id);
-    if (!album) {
-      throw new NotFoundException('Album not found');
+    
+    try {
+      this.albumsService.remove(id);
+    } catch(error){
+      if (error instanceof NotFoundException){
+        throw new NotFoundException('Album not found');
+      }
+      console.error('Error while removing album:', error.message)
+      throw error;
     }
-    this.albumsService.remove(id);
   }
 }
