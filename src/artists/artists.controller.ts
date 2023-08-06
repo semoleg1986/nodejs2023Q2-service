@@ -25,6 +25,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { plainToClass } from 'class-transformer';
 
 @ApiTags('Artist')
 @Controller('artist')
@@ -40,8 +41,8 @@ export class ArtistsController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   create(@Body() createArtistDto: CreateArtistDto): Artist {
-    const newArtist = this.artistsService.create(createArtistDto);
-    return newArtist;
+    return plainToClass(Artist, this.artistsService.create(createArtistDto));
+
   }
 
   @Get()
@@ -71,7 +72,7 @@ export class ArtistsController {
     if (!artist) {
       throw new NotFoundException('Artist not found');
     }
-    return artist;
+    return plainToClass(Artist, artist);
   }
 
   @Put(':id')
@@ -93,7 +94,7 @@ export class ArtistsController {
     if (!this.artistsService.isValidArtistId(id)) {
       throw new BadRequestException('Invalid artistId');
     }
-    return this.artistsService.update(id, updateArtistDto);
+    return plainToClass(Artist, this.artistsService.update(id, updateArtistDto));
   }
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
@@ -107,14 +108,19 @@ export class ArtistsController {
     description: 'Bad request. artistId is invalid (not uuid)',
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     if (!this.artistsService.isValidArtistId(id)) {
       throw new BadRequestException('Invalid artistId');
     }
-    const artist = this.artistsService.findOne(id);
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
+
+    try {
+      await this.artistsService.remove(id);
+    } catch(error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('Artist not found');
+      }
+      console.error('Error while removing artist:', error.message);
+      throw error;
     }
-    this.artistsService.remove(id);
   }
 }
