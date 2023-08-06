@@ -115,9 +115,9 @@ export class AlbumsController {
     if (!this.albumsService.isValidAlbumId(id)) {
       throw new BadRequestException('Invalid albumId');
     }
-    
+
     try {
-      this.albumsService.remove(id);
+      await this.albumsService.remove(id);
     } catch(error){
       if (error instanceof NotFoundException){
         throw new NotFoundException('Album not found');

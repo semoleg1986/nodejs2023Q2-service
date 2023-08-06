@@ -12,12 +12,15 @@ import { DatabaseService } from 'src/database/database';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Artist } from 'src/artists/entities/artist.entity';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     @InjectRepository(Album)
     private readonly albumRepository: Repository<Album>,
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
   ) {}
   // private readonly albums: Album[] = [];
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
@@ -92,13 +95,8 @@ export class AlbumsService {
       throw new NotFoundException('Album not found');
     }
     await this.albumRepository.remove(album);
+    await this.trackRepository.delete({ albumId: id });
     DatabaseService.favorites.albums =
-      DatabaseService.favorites.albums.filter((albumId) => albumId !== id);
-    DatabaseService.tracks.forEach((album) => {
-      if (album.albumId === id) {
-        album.albumId = null;
-      }
-    });
-    
+      DatabaseService.favorites.albums.filter((albumId) => albumId !== id);    
   }
 }
