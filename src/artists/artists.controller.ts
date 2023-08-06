@@ -42,7 +42,6 @@ export class ArtistsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   create(@Body() createArtistDto: CreateArtistDto): Artist {
     return plainToClass(Artist, this.artistsService.create(createArtistDto));
-
   }
 
   @Get()
@@ -96,6 +95,7 @@ export class ArtistsController {
     }
     return plainToClass(Artist, this.artistsService.update(id, updateArtistDto));
   }
+  
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({

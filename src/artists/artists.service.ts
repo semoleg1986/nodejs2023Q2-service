@@ -11,12 +11,18 @@ import { isBoolean, isString, isUUID } from 'class-validator';
 import { DatabaseService } from 'src/database/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Album } from 'src/albums/entities/album.entity';
+import { Track } from 'src/tracks/entities/track.entity';
 
 @Injectable()
 export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
     private readonly artistRepository: Repository<Artist>,
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
   ) {}
   // private artists: Artist[] = [];
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
@@ -83,17 +89,9 @@ export class ArtistsService {
       throw new NotFoundException('Artist not found');
     }
     await this.artistRepository.remove(artist);
-    DatabaseService.albums.forEach((album) => {
-      if (album.artistId === id) {
-        album.artistId = null;
-      }
-    });
+    await this.albumRepository.delete({ artistId: id });
+    await this.trackRepository.delete({ artistId: id });
     DatabaseService.favorites.artist =
       DatabaseService.favorites.artist.filter((artistId) => artistId !== id);
-    DatabaseService.tracks.forEach((track) => {
-      if (track.artistId === id) {
-        track.artistId = null;
-      }
-    });
   }
 }
