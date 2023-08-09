@@ -38,7 +38,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Track with id doesn't exist",
   })
-  addTrackToFavorites(@Param('id') id: string) {
+  addTrackToFavorites(@Param('id', ParseUUIDPipe) id: string) {
     return this.favoritesService.addTrackToFavorites(id);
   }
 
@@ -54,7 +54,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Album with id doesn't exist",
   })
-  addAlbumToFavorites(@Param('id') id: string) {
+  addAlbumToFavorites(@Param('id', ParseUUIDPipe) id: string) {
     return this.favoritesService.addAlbumToFavorites(id);
   }
   @Post('artist/:id')
@@ -71,7 +71,7 @@ export class FavoritesController {
   @ApiUnprocessableEntityResponse({
     description: "Artist with id doesn't exist",
   })
-  addArtistToFavorites(@Param('id') id: string) {
+  addArtistToFavorites(@Param('id', ParseUUIDPipe) id: string) {
     return this.favoritesService.addArtistToFavorites(id);
   }
   @Get()
