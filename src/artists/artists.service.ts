@@ -8,17 +8,19 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
 import { isBoolean, isString, isUUID } from 'class-validator';
-import { DatabaseService } from 'src/database/database';
+// import { DatabaseService } from 'src/database/database';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Album } from 'src/albums/entities/album.entity';
 import { Track } from 'src/tracks/entities/track.entity';
+// import { FavoritesService } from 'src/favorites/favorites.service';
 
 @Injectable()
 export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
     private readonly artistRepository: Repository<Artist>,
+    // private readonly favoritesService: FavoritesService,
     @InjectRepository(Album)
     private readonly albumRepository: Repository<Album>,
     @InjectRepository(Track)
@@ -88,10 +90,10 @@ export class ArtistsService {
       // DatabaseService.artists.splice(artistIndex, 1);
       throw new NotFoundException('Artist not found');
     }
+    await this.albumRepository.update({ artistId: id }, { artistId: null});
+    await this.trackRepository.update({ artistId: id }, { artistId: null});
     await this.artistRepository.remove(artist);
-    await this.albumRepository.delete({ artistId: id });
-    await this.trackRepository.delete({ artistId: id });
-    DatabaseService.favorites.artist =
-      DatabaseService.favorites.artist.filter((artistId) => artistId !== id);
+
+    // await this.favoritesService.removeArtist(id);
   }
 }
