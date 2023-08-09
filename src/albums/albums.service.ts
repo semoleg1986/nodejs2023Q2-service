@@ -8,35 +8,45 @@ import { v4 as uuidv4 } from 'uuid';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
-import { DatabaseService } from 'src/database/database';
+// import { DatabaseService } from 'src/database/database';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Artist } from 'src/artists/entities/artist.entity';
 import { Track } from 'src/tracks/entities/track.entity';
+import { Artist } from 'src/artists/entities/artist.entity';
+// import { FavoritesService } from 'src/favorites/favorites.service';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     @InjectRepository(Album)
     private readonly albumRepository: Repository<Album>,
+    // private readonly favoritesService: FavoritesService,
     @InjectRepository(Track)
     private readonly trackRepository: Repository<Track>,
+    @InjectRepository(Artist)
+    private readonly artistRepository: Repository<Artist>,
   ) {}
   // private readonly albums: Album[] = [];
   async create(createAlbumDto: CreateAlbumDto): Promise<Album> {
     if (!createAlbumDto.name || !createAlbumDto.year) {
       throw new BadRequestException('Invalid dto');
     }
+    let artist: Artist | null = null;
+    if (createAlbumDto.artistId) {
+      artist = await this.artistRepository.findOne({where: {id: createAlbumDto.artistId}});
+    }
+  
     const newAlbum: Album = {
       id: uuidv4(),
       name: createAlbumDto.name,
       year: createAlbumDto.year,
-      artistId: createAlbumDto.artistId || null,
+      artist: artist,
+      artistId: artist ? artist.id : null,
     };
-    // DatabaseService.albums.push(newAlbum);
-    // return newAlbum;
+  
     return await this.albumRepository.save(newAlbum);
   }
+  
 
   async findAll(): Promise<Album[]> {
     return await this.albumRepository.find();
@@ -86,17 +96,22 @@ export class AlbumsService {
   }
 
   async remove(id: string) {
-    // const album = DatabaseService.albums.find((album) => album.id === id);
-    const album = await this.albumRepository.findOne({ where: {id: id}}); 
-    // const albumIndex = DatabaseService.albums.findIndex(
-    //   (album) => album.id === id,
-    // );
-    if (!album){
-      throw new NotFoundException('Album not found');
+    try {
+      const album = await this.albumRepository.findOne({ where: { id: id } });
+  
+      if (!album) {
+        throw new NotFoundException('Album not found');
+      }
+  
+      await this.trackRepository.update({ albumId: id }, { albumId: null });
+  
+      await this.albumRepository.remove(album);
+  
+      return;
+    } catch (error) {
+      console.error('Error while removing album:', error);
+      throw error;
     }
-    await this.albumRepository.remove(album);
-    await this.trackRepository.delete({ albumId: id });
-    DatabaseService.favorites.albums =
-      DatabaseService.favorites.albums.filter((albumId) => albumId !== id);    
   }
+  
 }
