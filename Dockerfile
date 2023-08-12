@@ -1,26 +1,43 @@
-FROM node:18-alpine AS build
+FROM node:18.16.0-alpine as base
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY test /usr/src/app/test
 
-RUN npm install --production
+FROM base as deps
+
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+
+FROM deps as build
+
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci
 
 COPY . .
 
 RUN npm run build
 
+FROM base as final
 
-FROM node:18-alpine
+ENV NODE_ENV production
 
-WORKDIR /app
+USER node
 
-COPY --from=build /app/ .
+COPY package.json .
 
-RUN npm install --production
+COPY test ./test
 
-RUN npm install @types/jest jest
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/test ./test
+COPY doc ./doc
 
 EXPOSE 4000
 
-CMD [ "node", "dist/main" ]
+CMD npm run start:prod
