@@ -24,25 +24,28 @@ export class TracksService {
     @InjectRepository(Album)
     private readonly albumRepository: Repository<Album>,
     @InjectRepository(Artist)
-    private readonly artistRepository: Repository<Artist>,
-    // private readonly favoritesService: FavoritesService,
+    private readonly artistRepository: Repository<Artist>, // private readonly favoritesService: FavoritesService,
   ) {}
   async create(createTrackDto: CreateTrackDto) {
     if (!createTrackDto.name || !createTrackDto.duration) {
       throw new BadRequestException('Invalid dto');
     }
-  
+
     let artist: Artist | null = null;
     let album: Album | null = null;
-  
+
     if (createTrackDto.artistId) {
-      artist = await this.artistRepository.findOne({where: {id: createTrackDto.artistId}});
+      artist = await this.artistRepository.findOne({
+        where: { id: createTrackDto.artistId },
+      });
     }
-  
+
     if (createTrackDto.albumId) {
-      album = await this.albumRepository.findOne({where: {id: createTrackDto.albumId}});
+      album = await this.albumRepository.findOne({
+        where: { id: createTrackDto.albumId },
+      });
     }
-  
+
     const newTrack: Track = {
       id: uuidv4(),
       name: createTrackDto.name,
@@ -52,15 +55,13 @@ export class TracksService {
       albumId: album ? album.id : null,
       duration: createTrackDto.duration,
     };
-  
+
     return await this.trackRepository.save(newTrack);
   }
-  
 
   async findAll() {
     return await this.trackRepository.find();
   }
-  
 
   isValidTrackId(id: string): boolean {
     return isUUID(id, 'all');
@@ -68,17 +69,18 @@ export class TracksService {
 
   async findOne(id: string) {
     // return DatabaseService.tracks.find((track) => track.id === id);
-    return await this.trackRepository.findOne({ where: { id: id }})
-    .then(track => {
-      if (!track) {
-        throw new NotFoundException('Track not found');
-      }
-      return track;
-    })
-    .catch(error => {
-      console.error('Error while fetching track:', error.message);
-      throw error;
-    });
+    return await this.trackRepository
+      .findOne({ where: { id: id } })
+      .then((track) => {
+        if (!track) {
+          throw new NotFoundException('Track not found');
+        }
+        return track;
+      })
+      .catch((error) => {
+        console.error('Error while fetching track:', error.message);
+        throw error;
+      });
   }
 
   async update(id: string, updateTrackDto: UpdateTrackDto) {
@@ -92,7 +94,7 @@ export class TracksService {
       throw new BadRequestException('Invalid dto');
     }
     // const track = DatabaseService.tracks.find((track) => track.id === id);
-    const track = await this.trackRepository.findOne({ where: {id:id}})
+    const track = await this.trackRepository.findOne({ where: { id: id } });
     if (!track) {
       throw new NotFoundException('Track not found');
     }
@@ -103,23 +105,25 @@ export class TracksService {
       track.duration = updateTrackDto.duration;
     }
     if (updateTrackDto.artistId !== undefined) {
-      track.artistId = updateTrackDto.artistId !== null ? updateTrackDto.artistId : null;
+      track.artistId =
+        updateTrackDto.artistId !== null ? updateTrackDto.artistId : null;
     }
     if (updateTrackDto.albumId !== undefined) {
-      track.albumId = updateTrackDto.albumId !== null ? updateTrackDto.albumId : null;
+      track.albumId =
+        updateTrackDto.albumId !== null ? updateTrackDto.albumId : null;
     }
-    return await this.trackRepository.save(track)
+    return await this.trackRepository.save(track);
   }
 
   async remove(id: string) {
     // const track = DatabaseService.tracks.find((track) => track.id === id);
-    const track = await this.trackRepository.findOne({ where: {id: id} });
+    const track = await this.trackRepository.findOne({ where: { id: id } });
     // const trackIndex = DatabaseService.tracks.findIndex(
     //   (track) => track.id === id,
     // );
     if (!track) {
       // await this.favoritesService.removeTrack(id);
-      throw new NotFoundException('Track not found')
+      throw new NotFoundException('Track not found');
     }
     await this.trackRepository.remove(track);
   }

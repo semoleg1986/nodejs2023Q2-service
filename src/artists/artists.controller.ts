@@ -93,9 +93,12 @@ export class ArtistsController {
     if (!this.artistsService.isValidArtistId(id)) {
       throw new BadRequestException('Invalid artistId');
     }
-    return plainToClass(Artist, this.artistsService.update(id, updateArtistDto));
+    return plainToClass(
+      Artist,
+      this.artistsService.update(id, updateArtistDto),
+    );
   }
-  
+
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   @ApiOperation({
@@ -115,7 +118,7 @@ export class ArtistsController {
 
     try {
       await this.artistsService.remove(id);
-    } catch(error) {
+    } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException('Artist not found');
       }

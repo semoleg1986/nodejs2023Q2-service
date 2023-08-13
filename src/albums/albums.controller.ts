@@ -44,7 +44,7 @@ export class AlbumsController {
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   create(@Body() createAlbumDto: CreateAlbumDto): Album {
-    return plainToClass(Album, this.albumsService.create(createAlbumDto))
+    return plainToClass(Album, this.albumsService.create(createAlbumDto));
   }
 
   @Get()
@@ -118,11 +118,11 @@ export class AlbumsController {
 
     try {
       await this.albumsService.remove(id);
-    } catch(error){
-      if (error instanceof NotFoundException){
+    } catch (error) {
+      if (error instanceof NotFoundException) {
         throw new NotFoundException('Album not found');
       }
-      console.error('Error while removing album:', error.message)
+      console.error('Error while removing album:', error.message);
       throw error;
     }
   }

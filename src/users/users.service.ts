@@ -15,7 +15,6 @@ import { User } from './entities/user.entity';
 // import { DatabaseService } from 'src/database/database';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -40,7 +39,7 @@ export class UsersService {
     };
     // DatabaseService.users.push(newUser);
     // return newUser;
-    return await this.userRepository.save(newUser)
+    return await this.userRepository.save(newUser);
   }
 
   async findAll(): Promise<User[]> {
@@ -53,32 +52,32 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { id: id } })
-      .then(user => {
+    return this.userRepository
+      .findOne({ where: { id: id } })
+      .then((user) => {
         if (!user) {
           throw new NotFoundException('User not found');
         }
         return user;
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error while fetching user:', error.message);
         throw error;
       });
   }
-  
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     if (!isString(updateUserDto.newPassword)) {
       throw new BadRequestException('Invalid dto');
     }
     // const user = DatabaseService.users.find((user) => user.id === id);
-  
+
     try {
       const user = await this.userRepository.findOne({ where: { id: id } });
       if (!user) {
         throw new NotFoundException('User not found');
       }
-  
+
       if (user.password === updateUserDto.oldPassword) {
         user.password = updateUserDto.newPassword;
         user.version++;
@@ -92,17 +91,15 @@ export class UsersService {
       throw error;
     }
   }
-  
 
   async remove(id: string) {
     const user = await this.userRepository.findOne({ where: { id: id } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    
+
     await this.userRepository.remove(user);
-  
+
     return user;
   }
-  
 }

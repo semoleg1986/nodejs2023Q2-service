@@ -37,7 +37,7 @@ export class ArtistsService {
     };
     // DatabaseService.artists.push(newArtist);
     // return newArtist;
-    return await this.artistRepository.save(newArtist)
+    return await this.artistRepository.save(newArtist);
   }
 
   async findAll(): Promise<Artist[]> {
@@ -51,17 +51,18 @@ export class ArtistsService {
 
   async findOne(id: string): Promise<Artist | undefined> {
     // return DatabaseService.artists.find((artist) => artist.id === id);
-    return this.artistRepository.findOne({ where: { id: id } })
-    .then(artist => {
-      if (!artist) {
-        throw new NotFoundException('Artist not found');
-      }
-      return artist;
-    })
-    .catch(error => {
-      console.error('Error while fetching artist:', error.message);
-      throw error;
-    });
+    return this.artistRepository
+      .findOne({ where: { id: id } })
+      .then((artist) => {
+        if (!artist) {
+          throw new NotFoundException('Artist not found');
+        }
+        return artist;
+      })
+      .catch((error) => {
+        console.error('Error while fetching artist:', error.message);
+        throw error;
+      });
   }
 
   async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist> {
@@ -90,8 +91,8 @@ export class ArtistsService {
       // DatabaseService.artists.splice(artistIndex, 1);
       throw new NotFoundException('Artist not found');
     }
-    await this.albumRepository.update({ artistId: id }, { artistId: null});
-    await this.trackRepository.update({ artistId: id }, { artistId: null});
+    await this.albumRepository.update({ artistId: id }, { artistId: null });
+    await this.trackRepository.update({ artistId: id }, { artistId: null });
     await this.artistRepository.remove(artist);
 
     // await this.favoritesService.removeArtist(id);

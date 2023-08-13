@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne, RelationId } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { Album } from 'src/albums/entities/album.entity';
 
 @Entity('album-fav')

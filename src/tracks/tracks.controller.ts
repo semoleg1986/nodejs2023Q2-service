@@ -125,9 +125,9 @@ export class TracksController {
 
     try {
       await this.tracksService.remove(id);
-    } catch(error){
-      if (error instanceof NotFoundException){
-        throw new NotFoundException('Track not found')
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('Track not found');
       }
       console.error('Error while removing track:', error.message);
       throw error;

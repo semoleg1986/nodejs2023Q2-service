@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { Artist } from 'src/artists/entities/artist.entity';
 
 @Entity('artist-fav')

@@ -14,7 +14,20 @@ import { AlbumFav } from './entities/favAlbum.entity';
 import { ArtistFav } from './entities/favArtist.entity';
 
 @Module({
-  imports: [ArtistsModule, AlbumsModule, TracksModule, TypeOrmModule.forFeature([Favorite, Track, Album, Artist, TrackFav, AlbumFav, ArtistFav])],
+  imports: [
+    ArtistsModule,
+    AlbumsModule,
+    TracksModule,
+    TypeOrmModule.forFeature([
+      Favorite,
+      Track,
+      Album,
+      Artist,
+      TrackFav,
+      AlbumFav,
+      ArtistFav,
+    ]),
+  ],
   controllers: [FavoritesController],
   providers: [FavoritesService],
 })

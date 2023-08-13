@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinColumn,
+  OneToOne,
+} from 'typeorm';
 import { Track } from 'src/tracks/entities/track.entity';
 
 @Entity('track-fav')

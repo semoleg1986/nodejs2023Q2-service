@@ -33,9 +33,11 @@ export class AlbumsService {
     }
     let artist: Artist | null = null;
     if (createAlbumDto.artistId) {
-      artist = await this.artistRepository.findOne({where: {id: createAlbumDto.artistId}});
+      artist = await this.artistRepository.findOne({
+        where: { id: createAlbumDto.artistId },
+      });
     }
-  
+
     const newAlbum: Album = {
       id: uuidv4(),
       name: createAlbumDto.name,
@@ -43,10 +45,9 @@ export class AlbumsService {
       artist: artist,
       artistId: artist ? artist.id : null,
     };
-  
+
     return await this.albumRepository.save(newAlbum);
   }
-  
 
   async findAll(): Promise<Album[]> {
     return await this.albumRepository.find();
@@ -58,17 +59,18 @@ export class AlbumsService {
 
   async findOne(id: string): Promise<Album> {
     // return DatabaseService.albums.find((album) => album.id === id);
-    return this.albumRepository.findOne({ where: { id: id } })
-    .then(album => {
-      if (!album) {
-        throw new NotFoundException('Album not found');
-      }
-      return album;
-    })
-    .catch(error => {
-      console.error('Error while fetching album:', error.message);
-      throw error;
-    });
+    return this.albumRepository
+      .findOne({ where: { id: id } })
+      .then((album) => {
+        if (!album) {
+          throw new NotFoundException('Album not found');
+        }
+        return album;
+      })
+      .catch((error) => {
+        console.error('Error while fetching album:', error.message);
+        throw error;
+      });
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
@@ -79,7 +81,7 @@ export class AlbumsService {
       throw new BadRequestException('Invalid dto');
     }
     // const album = DatabaseService.albums.find((album) => album.id === id);
-    const album = await this.albumRepository.findOne({ where: {id:id}})
+    const album = await this.albumRepository.findOne({ where: { id: id } });
     if (!album) {
       throw new NotFoundException('Album not found');
     }
@@ -98,20 +100,19 @@ export class AlbumsService {
   async remove(id: string) {
     try {
       const album = await this.albumRepository.findOne({ where: { id: id } });
-  
+
       if (!album) {
         throw new NotFoundException('Album not found');
       }
-  
+
       await this.trackRepository.update({ albumId: id }, { albumId: null });
-  
+
       await this.albumRepository.remove(album);
-  
+
       return;
     } catch (error) {
       console.error('Error while removing album:', error);
       throw error;
     }
   }
-  
 }
