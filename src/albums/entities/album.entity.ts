@@ -1,13 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Artist } from 'src/artists/entities/artist.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Album {
   @ApiProperty({ required: true, format: 'uuid' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  
+
   @ApiProperty({ required: true, example: 'Innuendo' })
   @Column()
   name: string;
@@ -20,7 +27,7 @@ export class Album {
     onDelete: 'CASCADE',
   })
   @ManyToOne(() => Artist)
-  @JoinColumn({ name: "artistId" })
+  @JoinColumn({ name: 'artistId' })
   artist: Artist;
 
   @ApiProperty({ required: false, format: 'uuid', nullable: true })
