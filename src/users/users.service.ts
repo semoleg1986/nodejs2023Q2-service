@@ -31,8 +31,10 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(
+      createUserDto.password,
+      parseInt(process.env.CRYPT_SALT) || 10,
+    );
 
     const newUser: User = {
       ...createUserDto,
@@ -83,8 +85,14 @@ export class UsersService {
         throw new NotFoundException('User not found');
       }
 
-      if (user.password === updateUserDto.oldPassword) {
-        user.password = updateUserDto.newPassword;
+      if (await bcrypt.compare(updateUserDto.oldPassword, user.password)) {
+        const cryptSalt = process.env.CRYPT_SALT;
+        const rounds = parseInt(cryptSalt) || 10;
+        const hashedPassword = await bcrypt.hash(
+          updateUserDto.newPassword,
+          rounds,
+        );
+        user.password = hashedPassword;
         user.version++;
         user.updatedAt = Date.now();
         return await this.userRepository.save(user);
