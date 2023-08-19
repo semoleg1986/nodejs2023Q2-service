@@ -2,11 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { MyLogger } from './logger/logger.service';
 
 const port = process.env.PORT || 3000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // const logger = new Logger('bootstrap');
+  const app = await NestFactory.create(AppModule, {
+    logger: new MyLogger(),
+  });
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Home Library Service')
@@ -17,5 +21,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
   await app.listen(port);
+  // logger.log(`App listening on port ${port}`);
 }
 bootstrap();
