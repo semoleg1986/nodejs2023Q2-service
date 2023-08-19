@@ -6,8 +6,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// import { CreateAuthDto } from './dto/create-auth.dto';
-// import { UpdateAuthDto } from './dto/update-auth.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -18,6 +16,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Public } from './public.decorator';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -32,6 +31,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful login.' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiConflictResponse({ description: 'Conflict. Login already exists' })
+  @Public()
   async signup(@Body() createAuthDto: CreateUserDto): Promise<User> {
     try {
       const user = await this.authService.signup(createAuthDto);
@@ -49,6 +49,7 @@ export class AuthController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful login.' })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @ApiForbiddenResponse({ description: 'Authentication failed' })
+  @Public()
   async login(@Body() loginAuthDto: CreateUserDto) {
     try {
       const { accessToken, refreshToken } = await this.authService.login(
