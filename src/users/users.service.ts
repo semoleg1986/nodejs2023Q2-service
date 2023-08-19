@@ -115,4 +115,7 @@ export class UsersService {
 
     return user;
   }
+  async findOneByLogin(login: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { login: login } });
+  }
 }
