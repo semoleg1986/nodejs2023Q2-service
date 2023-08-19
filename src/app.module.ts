@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -20,7 +21,6 @@ import { AuthModule } from './auth/auth.module';
       migrationsRun: true,
     }),
     UsersModule,
-    ConfigModule.forRoot(),
     TracksModule,
     ArtistsModule,
     AlbumsModule,
