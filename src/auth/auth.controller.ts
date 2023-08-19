@@ -40,4 +40,23 @@ export class AuthController {
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  @Post('login')
+  @ApiOperation({
+    summary: 'Login',
+    description: 'Logins a user and returns tokens',
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful login.' })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  @ApiForbiddenResponse({ description: 'Authentication failed' })
+  async login(@Body() loginAuthDto: CreateUserDto) {
+    try {
+      const { accessToken, refreshToken } = await this.authService.login(
+        loginAuthDto,
+      );
+      return { accessToken, refreshToken };
+    } catch (error) {
+      throw new HttpException('Authentication failed', HttpStatus.FORBIDDEN);
+    }
+  }
 }

@@ -18,4 +18,32 @@ export class AuthService {
     }
     return await this.usersService.create(createAuthDto);
   }
+
+  async login(loginAuthDto: CreateUserDto) {
+    const { login, password } = loginAuthDto;
+
+    const user = await this.usersService.findOneByLogin(login);
+
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const payload = {
+      userId: user.id,
+      login: user.login,
+    };
+
+    const accessTokenOptions = {
+      expiresIn: process.env.TOKEN_EXPIRE_TIME,
+      secret: process.env.JWT_SECRET_KEY,
+    };
+
+    const refreshTokenOptions = {
+      expiresIn: process.env.TOKEN_REFRESH_EXPIRE_TIME,
+      secret: process.env.JWT_SECRET_REFRESH_KEY,
+    };
+
+    const accessToken = this.jwtService.sign(payload, accessTokenOptions);
+    const refreshToken = this.jwtService.sign(payload, refreshTokenOptions);
+    return { accessToken, refreshToken };
+  }
 }
