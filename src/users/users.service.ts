@@ -15,6 +15,7 @@ import { User } from './entities/user.entity';
 // import { DatabaseService } from 'src/database/database';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -30,12 +31,16 @@ export class UsersService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
     const newUser: User = {
       ...createUserDto,
       id: uuid4(),
       version: 1,
       createdAt: Date.now(),
       updatedAt: Date.now(),
+      password: hashedPassword,
     };
     // DatabaseService.users.push(newUser);
     // return newUser;
