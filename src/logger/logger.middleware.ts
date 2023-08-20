@@ -9,7 +9,6 @@ export class LoggerMiddleware implements NestMiddleware {
     const { method, originalUrl, query, body } = req;
 
     res.on('finish', () => {
-      // const contentLength = res.get('content-length');
       const { statusCode } = res;
       this.logger.log(
         `${method} ${originalUrl}: Query parameters: ${JSON.stringify(
