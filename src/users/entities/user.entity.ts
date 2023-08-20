@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
-// import * as bcrypt from 'bcrypt';
+
 class BigIntTransformer implements ValueTransformer {
   to(value: number): string {
     return value.toString();
@@ -45,12 +45,4 @@ export class User {
     transformer: new BigIntTransformer(),
   })
   updatedAt: number;
-
-  // async validatePassword(password: string): Promise<boolean> {
-  //   return await bcrypt.compare(password, this.password);
-  // }
-
-  // async setPassword(password: string): Promise<void> {
-  //   this.password = await bcrypt.hash(password, 10);
-  // }
 }
