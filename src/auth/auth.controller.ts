@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { Public } from './public.decorator';
+import { RefreshAuthDto } from './dto/refresh-auth.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -59,5 +60,10 @@ export class AuthController {
     } catch (error) {
       throw new HttpException('Authentication failed', HttpStatus.FORBIDDEN);
     }
+  }
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body() refreshAuthDto: RefreshAuthDto) {
+    return await this.authService.refresh(refreshAuthDto);
   }
 }
