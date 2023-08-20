@@ -9,8 +9,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MyLogger } from './logger/logger.service';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AuthModule } from './auth/auth.module';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './logger/exception.filter';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
+import { AuthGuard } from './auth/auth.guard';
 
 @Module({
   imports: [
@@ -29,12 +32,18 @@ import { AllExceptionsFilter } from './logger/exception.filter';
     FavoritesModule,
     AuthModule,
   ],
+  controllers: [AppController],
   providers: [
     MyLogger,
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+    AppService,
   ],
 })
 export class AppModule implements NestModule {
