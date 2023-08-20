@@ -11,7 +11,6 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { User } from 'src/users/entities/user.entity';
 import {
   ApiBadRequestResponse,
-  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiOperation,
   ApiResponse,
@@ -26,12 +25,11 @@ export class AuthController {
 
   @Post('signup')
   @ApiOperation({
-    summary: 'Login',
+    summary: 'Signup',
     description: 'Logins a user and returns a JWT-token',
   })
   @ApiResponse({ status: HttpStatus.OK, description: 'Successful login.' })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiConflictResponse({ description: 'Conflict. Login already exists' })
   @Public()
   async signup(@Body() createAuthDto: CreateUserDto): Promise<User> {
     try {
