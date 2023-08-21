@@ -7,6 +7,7 @@ export class MyLogger implements LoggerService {
   private appLogLevel = (process.env.LOG_LEVEL as LogLevel) || 'verbose';
   private logFilePath = './logs/app_log.log';
   private errFilePath = './logs/app_err.log';
+  private fileSize: number = parseInt(process.env.FILE_SIZE) || 1024;
 
   private colors = {
     log: '\x1b[0m',
@@ -26,10 +27,10 @@ export class MyLogger implements LoggerService {
     }
   }
 
-  error(message: string, trace: string) {
+  error(message: string) {
     if (this.isLogLevelEnabled('error')) {
       const timestamp = new Date().toISOString();
-      const formattedMessage = `${this.colors.time}${timestamp}${this.colors.error} ERROR ${message}, Trace: ${trace}${this.colors.log}`;
+      const formattedMessage = `${this.colors.time}${timestamp}${this.colors.error} ERROR ${message}${this.colors.log}`;
       console.error(formattedMessage);
       this.writeToFile(formattedMessage, true);
     }
@@ -81,7 +82,7 @@ export class MyLogger implements LoggerService {
         return;
       }
 
-      if (stats.size >= 1024 * 1024) {
+      if (stats.size >= 1024 * this.fileSize) {
         const rotatedFilePath = logFilePath.replace(
           '.log',
           `_old_${Date.now()}.log`,

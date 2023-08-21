@@ -7,10 +7,10 @@ import { MyLogger } from './logger/logger.service';
 const port = process.env.PORT || 3000;
 
 async function bootstrap() {
-  // const logger = new Logger('bootstrap');
   const app = await NestFactory.create(AppModule, {
     logger: new MyLogger(),
   });
+  const loggingService = app.get(MyLogger);
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Home Library Service')
@@ -24,11 +24,22 @@ async function bootstrap() {
   await app.listen(port);
   // logger.log(`App listening on port ${port}`);
   process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
+    const errorData = {
+      message: 'Uncaught Exception',
+      trace: error.stack,
+      statusCode: 500,
+    };
+    loggingService.error(JSON.stringify(errorData));
   });
 
   process.on('unhandledRejection', (reason) => {
-    console.error('Unhandled Rejection:', reason);
+    const errorData = {
+      message: 'Unhandled Rejection',
+      reason: reason instanceof Error ? reason.stack : reason,
+      statusCode: 500,
+    };
+
+    loggingService.error(JSON.stringify(errorData));
   });
 }
 bootstrap();

@@ -30,7 +30,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: httpAdapter.getRequestUrl(ctx.getRequest()),
     };
-    this.logger.error(JSON.stringify(responseBody), '');
+    this.logger.error(JSON.stringify(responseBody));
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
