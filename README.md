@@ -14,7 +14,7 @@ git clone https://github.com/semoleg1986/nodejs2023Q2-service.git
 ## Switch to the develop branch
 
 ```
-git checkout dev#2
+git checkout dev#3
 ```
 
 ## Installing NPM modules
@@ -34,14 +34,7 @@ docker-compose up
 After application running open new terminal and enter:
 
 ```
-npm run test
-```
-### Checking for vulnerabilities (in some cases, you may need to start VPN)
-
-After application running open new terminal and enter:
-
-```
-npm run start:scout
+npm run test:auth
 ```
 
 ### Debugging in VSCode
