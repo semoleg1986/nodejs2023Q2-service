@@ -15,11 +15,12 @@ import {
   ApiOperation,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Public } from './public.decorator';
 import { RefreshAuthDto } from './dto/refresh-auth.dto';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -27,9 +28,12 @@ export class AuthController {
   @Post('signup')
   @ApiOperation({
     summary: 'Signup',
-    description: 'Logins a user and returns a JWT-token',
+    description: 'Signup new user',
   })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Successful login.' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Successful signup.',
+  })
   @ApiBadRequestResponse({ description: 'Bad request' })
   @Public()
   async signup(@Body() createAuthDto: CreateUserDto): Promise<User> {
@@ -63,6 +67,13 @@ export class AuthController {
   }
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Refresh token',
+    description: 'Refresh and return access and refresh tokens',
+  })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Successful refresh.' })
+  @ApiUnauthorizedResponse({ description: 'No refreshToken in body' })
+  @ApiForbiddenResponse({ description: 'Refresh token is invalid or expired' })
   async refresh(@Body() refreshAuthDto: RefreshAuthDto) {
     return await this.authService.refresh(refreshAuthDto);
   }
