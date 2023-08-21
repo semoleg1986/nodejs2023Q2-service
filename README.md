@@ -37,6 +37,18 @@ After application running open new terminal and enter:
 npm run test:auth
 ```
 
+# Auto-fix and format
+
+After application running open new terminal and enter:
+
+```
+npm run lint
+```
+
+```
+npm run format
+```
+
 ### Debugging in VSCode
 
 Press <kbd>F5</kbd> to debug.
