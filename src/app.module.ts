@@ -13,7 +13,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { AllExceptionsFilter } from './logger/exception.filter';
 import { AppService } from './app.service';
 import { AppController } from './app.controller';
-import { AuthGuard } from './auth/auth.guard';
+import { AuthGuard } from './guard/auth.guard';
 
 @Module({
   imports: [
