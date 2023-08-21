@@ -8,25 +8,29 @@ export class MyLogger implements LoggerService {
   private logStream: fs.WriteStream;
 
   log(message: string) {
-    console.log(`[Log]: ${message}`);
-    this.writeToFile(`[Log]: ${message}`);
+    console.log(`${new Date().toISOString()} LOG ${message}`);
+    this.writeToFile(`${new Date().toISOString()} LOG ${message}`);
   }
 
   error(message: string, trace: string) {
-    console.error(`[Error]: ${message}, Trace: ${trace}`);
-    this.writeToFile(`[Error]: ${message}, Trace: ${trace}`);
+    console.error(
+      `${new Date().toISOString()} ERROR ${message}, Trace: ${trace}`,
+    );
+    this.writeToFile(
+      `${new Date().toISOString()} ERROR ${message}, Trace: ${trace}`,
+    );
   }
 
   warn(message: string) {
-    console.warn(`[Warning]: ${message}`);
+    console.warn(`${new Date().toISOString()} WARNING ${message}`);
   }
 
   debug(message: string) {
-    console.debug(`[Debug]: ${message}`);
+    console.debug(`${new Date().toISOString()} DEBUG ${message}`);
   }
 
   verbose(message: string) {
-    console.log(`[Verbose]: ${message}`);
+    console.log(`${new Date().toISOString()} VERBOSE ${message}`);
   }
   private writeToFile(logMessage: string) {
     const logFilePath = './file.log';
