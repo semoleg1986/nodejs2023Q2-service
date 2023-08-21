@@ -37,7 +37,7 @@ After application running open new terminal and enter:
 npm run test:auth
 ```
 
-# Auto-fix and format
+### Auto-fix and format
 
 After application running open new terminal and enter:
 
