@@ -4,7 +4,7 @@ import { Public } from './auth/public.decorator';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 @ApiExcludeController()
-@Controller('excluded')
+@Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
