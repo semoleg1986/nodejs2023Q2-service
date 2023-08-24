@@ -1,5 +1,13 @@
 # Home Library Service
 
+## AHTUNG!!!
+
+Please paste after line - PORT: ${PORT} in docker-compose.yml:
+
+```
+env_file: - .env
+```
+
 ## Prerequisites
 
 - Git - [Download & Install Git](https://git-scm.com/downloads).
